@@ -1,0 +1,89 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+    - try:
+        #     - script:
+        #         timeout: 5m
+        #         content: |
+        #           helm install crossplane \
+        #           --namespace crossplane-system \
+        #           --create-namespace crossplane-stable/crossplane
+        #     - script:
+        #         timeout: 5m
+        #         content: |
+        #           kubectl wait --for=condition=Available deploy/crossplane -n crossplane-system --timeout=3m
+        #     - apply:
+        #         timeout: 5m
+        #         file: provider/provider-k8s.yaml
+        #     - apply:
+        #         timeout: 5m
+        #         file: provider/deployment-runtim-config.yaml
+        #     - script:
+        #         timeout: 15m
+        #         content: |
+        #           kubectl wait --for=condition=Healthy provider.pkg.crossplane.io/provider-kubernetes  --timeout=15m
+        # - apply:
+        #     timeout: 5m
+        #     file: provider/clusterrole-binding.yaml
+        # - apply:
+        #     timeout: 5m
+        #     file: provider/provider-in-clutser.yaml
+
+        - apply:
+            file: crossplane-resources/xrd/application.yaml
+        - apply:
+            file: crossplane-resources/composition/application-composition.yaml
+        - sleep:
+            duration: 5m
+        - apply:
+            file: crossplane-resources/application-70740.yaml
+        # - apply:
+        #     file: pod.yaml
+        - script:
+            timeout: 15m
+            content: |
+              kubectl wait --for=condition=Ready application/test  --timeout=15m
+        # - script:
+        #     timeout: 15m
+        #     content: |
+        #       kubectl wait --for=condition=Synced application/test  --timeout=15m
+        - script:
+            timeout: 5m
+            content: |
+              kubectl wait --for=jsonpath='{.status.phase}'=Active ns/notest-ns-dev  --timeout=15m
+        - get:
+            apiVersion: v1
+            kind: Namespace
+            name: notest-ns-dev
+        - get:
+            apiVersion: apps/v1
+            kind: Deployment
+            name: wrong
+            namespace: notest-ns-dev
+        - delete:
+            file: crossplane-resources/application-70740.yaml
+        - sleep:
+            duration: 5m
+
+      # cleanup:
+      #   - script:
+      #       timeout: 5m
+      #       content: |
+      #         helm uninstall crossplane -n crossplane-system
+
+      catch:
+        - script:
+            timeout: 5m
+            content: |
+              kubectl get po -n crossplane-system
+        - script:
+            timeout: 5m
+            content: |
+              kubectl get pkg
+        - script:
+            timeout: 5m
+            content: |
+              kubectl get object

@@ -1,0 +1,10 @@
+apiVersion: arpan.io/v1alpha1
+kind: Application
+metadata:
+  name: test
+  namespace: default
+spec:
+  nsName: "notest"
+  deploymentConfig:
+    name: test
+    replicas: 2

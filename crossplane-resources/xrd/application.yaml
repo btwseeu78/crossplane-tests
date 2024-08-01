@@ -1,0 +1,35 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xapplications.arpan.io
+spec:
+  defaultCompositionRef:
+    name: application-composition
+  group: arpan.io
+  names:
+    kind: XApplication
+    plural: xapplications
+  claimNames:
+    kind: Application
+    plural: applications
+
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                nsName:
+                  type: string
+                deploymentConfig:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    replicas:
+                      type: integer
