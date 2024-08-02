@@ -5,33 +5,6 @@ metadata:
 spec:
   steps:
     - try:
-        #     - script:
-        #         timeout: 5m
-        #         content: |
-        #           helm install crossplane \
-        #           --namespace crossplane-system \
-        #           --create-namespace crossplane-stable/crossplane
-        #     - script:
-        #         timeout: 5m
-        #         content: |
-        #           kubectl wait --for=condition=Available deploy/crossplane -n crossplane-system --timeout=3m
-        #     - apply:
-        #         timeout: 5m
-        #         file: provider/provider-k8s.yaml
-        #     - apply:
-        #         timeout: 5m
-        #         file: provider/deployment-runtim-config.yaml
-        #     - script:
-        #         timeout: 15m
-        #         content: |
-        #           kubectl wait --for=condition=Healthy provider.pkg.crossplane.io/provider-kubernetes  --timeout=15m
-        # - apply:
-        #     timeout: 5m
-        #     file: provider/clusterrole-binding.yaml
-        # - apply:
-        #     timeout: 5m
-        #     file: provider/provider-in-clutser.yaml
-
         - apply:
             file: crossplane-resources/xrd/application.yaml
         - apply:
@@ -66,14 +39,7 @@ spec:
         - delete:
             file: crossplane-resources/application-70740.yaml
         - sleep:
-            duration: 5m
-
-      # cleanup:
-      #   - script:
-      #       timeout: 5m
-      #       content: |
-      #         helm uninstall crossplane -n crossplane-system
-
+            duration: 2m
       catch:
         - script:
             timeout: 5m
